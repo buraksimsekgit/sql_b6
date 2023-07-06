@@ -757,6 +757,183 @@ SELECT salary, first_name FROM employees
 WHERE salary = (SELECT MIN(salary) FROM employees
 WHERE salary > (SELECT MIN(salary) FROM employees));
 
+select* from employees;
+
+
+
+
+-- 1. Find all employees who earn more than the average salary.
+
+SELECT first_name, salary FROM employees
+WHERE salary > ( SELECT AVG(salary) FROM employees);
+
+-- 2. Find the employee names who have the highest salary.
+
+SELECT first_name, salary FROM employees
+WHERE salary = ( SELECT MAX(salary) FROM employees);
+
+-- 3. Find the names of departments that have more than 5 employees.
+
+SELECT * FROM departments;
+
+SELECT department_name from departments
+WHERE department_id IN ( SELECT department_id FROM employees
+GROUP BY department_id
+HAVING COUNT(*) > 5);
+
+
+-- 4. Find the first name and last name of employees whose manager has a manager.
+
+SELECT * FROM employees;
+
+SELECT first_name, last_name FROM employees
+WHERE manager_id IN ( SELECT employee_id FROM employees
+WHERE manager_id IS NOT NULL);
+
+
+-- 5. Find all departments where the total salary is above the company's average total salary by department.
+
+SELECT department_id FROM employees
+GROUP BY department_id
+HAVING SUM(salary) > ( SELECT AVG(salary) FROM employees);
+
+
+-- 6. List employees who have the same job title as any employee in department 90, but are not themselves in department 90.
+
+SELECT first_name, last_name, job_id FROM employees
+WHERE job_id IN ( SELECT job_id FROM employees WHERE department_id = 90);
+
+
+-- 7. Find the department ID which has the most number of employees.
+
+SELECT department_id FROM employees
+GROUP BY department_id
+HAVING COUNT(*) = (SELECT MAX(COUNT(*))  FROM employees
+GROUP BY department_id);
+
+
+-- 8. List all employees who have the same manager as the employee with the lowest salary.
+
+SELECT first_name FROM employees
+WHERE manager_id = ( SELECT manager_id FROM employees
+WHERE salary = ( SELECT MIN(salary) FROM employees));
+
+
+-- 9. Find all employees whose salary is greater than the salary of all employees in department 10.
+
+SELECT * FROM employees
+WHERE salary > ( SELECT salary from employees WHERE department_id = 10);
+
+
+--========================================--
+--================= JOINS ================--
+--========================================--
+
+
+SELECT * FROM employees;
+
+SELECT * FROM departments;
+
+SELECT * FROM employees, departments
+WHERE employees.department_id = departments.department_id
+AND department_name = 'Marketing';
+
+SELECT * FROM employees JOIN departments
+ON employees.department_id = departments.department_id;
+
+SELECT * FROM employees e JOIN departments d
+ON e.department_id = d.department_id;
+
+
+-- 1. Write the query to the print country name, country id, and region name for each country.
+
+SELECT * FROM countries;
+
+SELECT * FROM regions;
+
+SELECT c.country_name, c.country_id, r.region_name FROM countries c JOIN regions r
+ON c.region_id = r.region_id;
+
+--2. Write the query to print the last name, email, and  job title for each employee.
+
+SELECT * FROM EMPLOYEES;
+
+SELECT * FROM JOBS;
+
+SELECT e.last_name, e.email, j.job_title FROM employees e JOIN jobs j
+ON e.job_id = j.job_id;
+
+
+
+SELECT * FROM employees;
+
+SELECT * FROM departments;
+
+SELECT * FROM employees e INNER JOIN departments d
+ON e.department_id = d.department_id;
+
+SELECT * FROM employees e RIGHT JOIN departments d
+ON e.department_id = d.department_id;
+
+SELECT * FROM employees e LEFT JOIN departments d
+ON e.department_id = d.department_id;
+
+SELECT * FROM employees e INNER JOIN departments d
+ON e.department_id = d.department_id;
+
+SELECT * FROM employees e FULL OUTER JOIN departments d
+ON e.department_id = d.department_id;
+
+
+SELECT * FROM employees;
+
+SELECT * FROM job_history;
+
+SELECT * FROM employees e RIGHT JOIN job_history j
+ON e.employee_id = j.employee_id;
+
+SELECT * FROM employees e FULL OUTER JOIN job_history j
+ON e.employee_id = j.employee_id;
+
+SELECT * FROM employees e INNER JOIN job_history j
+ON e.employee_id = j.employee_id;
+
+SELECT e.first_name, j.start_date, j.end_date, e.hire_date
+FROM employees e JOIN job_history j
+ON e.employee_id = j.employee_id;
+
+
+SELECT * FROM employees;
+
+select e.first_name as employee, m.first_name as manager
+from employees e join employees m
+on e.manager_id = m.employee_id;
+
+
+-- Write a query to print country name, country id and region name for each country
+
+
+-- Write a query to print last name email and jon title for each employee
+
+
+
+
+--1. Write a query to get count of employees for each manager and order by count of employees.
+
+SELECT m.manager_id, COUNT(*) FROM employees e JOIN employees m
+ON e.manager_id = m.employee_id
+WHERE e.manager_id IS NOT NULL
+GROUP BY m.manager_id
+ORDER BY COUNT(*);
+
+--2. Find the employees with the salary more than their managers salary (Interview question)
+
+SELECT e.first_name, e.salary, m.salary AS manager_salary
+FROM employees e
+JOIN employees m ON e.manager_id = m.employee_id
+WHERE e.salary > m.salary;
+
+
 
 
 
